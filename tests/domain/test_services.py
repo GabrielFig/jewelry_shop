@@ -1,5 +1,7 @@
 from app.domain.models import Batch, OrderLine
 from app.domain.services import allocate
+from app.unit_of_work import InMemoryUnitOfWork
+from app.service_layer.services import allocate_order
 
 
 def test_returns_allocated_batch_ref():
@@ -28,3 +30,12 @@ def test_allocation_fails_for_insufficient_quantity():
 
     assert result is None
     assert batch.available_quantity == 5
+
+
+def test_allocate_order():
+    uow = InMemoryUnitOfWork()
+    uow.batches.add(Batch("batch1", "GOLD_RING", 10))
+    result = allocate_order("order1", "GOLD_RING", 2, uow)
+
+    assert result == "batch1"
+    assert uow.committed
