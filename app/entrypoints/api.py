@@ -6,6 +6,7 @@ from app.domain.models import Batch
 from datetime import date
 from typing import Optional
 from app.unit_of_work import SqlAlchemyUnitOfWork
+from app.message_bus import SENT_NOTIFICATIONS
 
 
 router = APIRouter()
@@ -28,14 +29,14 @@ class BatchRequest(BaseModel):
 
 @router.post("/allocate")
 def allocate(request: OrderRequest):
-    
     try:
-        batch_ref = allocate_order(
-            request.order_id, 
-            request.sku, 
-            request.quantity, 
-            uow
-        )
+        with SqlAlchemyUnitOfWork() as uow:
+            batch_ref = allocate_order(
+                request.order_id, 
+                request.sku, 
+                request.quantity, 
+                uow
+            )
         return {"batch_ref": batch_ref}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -56,3 +57,8 @@ def add_batch(batch: BatchRequest):
         uow.batches.add(domain_batch)
         uow.commit()
     return {"message": f"Batch {batch.reference} added."}
+
+
+@router.get("/notifications")
+def notifications():
+    return {"notifications": SENT_NOTIFICATIONS}
