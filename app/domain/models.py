@@ -13,6 +13,7 @@ class Batch:
         self.sku = sku
         self.purchased_quantity = purchased_quantity
         self._allocations = set()
+        self.events = []
 
     def __eq__(self, other):
         return self.ref == other.ref
