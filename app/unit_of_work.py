@@ -2,15 +2,14 @@ from abc import ABC, abstractmethod
 from app.adapters.repository import AbstractBatchRepository, InMemoryBatchRepository, SqlAlchemyBatchRepository
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./jewelry.db"
 
+# Configuración dinámica (usa SQLite por defecto para desarrollo local)
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@db:5432/jewelry_shop")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},  # necesario para SQLite
-)
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 class AbstractUnitOfWork(ABC):
