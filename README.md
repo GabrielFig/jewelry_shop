@@ -5,7 +5,7 @@
 
 <img src="readmeai/assets/logos/purple.svg" width="30%" style="position: relative; top: 0; right: 0;" alt="Project Logo"/>
 
-# <code>❯ REPLACE-ME</code>
+# <code>❯ Jewelry API usign pattern designs</code>
 
 <em></em>
 
@@ -28,7 +28,7 @@
 
 ## Table of Contents
 
-- [❯ REPLACE-ME](#-replace-me)
+- [❯ Jewelry API usign pattern designs](#-jewelry-api-usign-pattern-designs)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Features](#features)
@@ -262,18 +262,18 @@ This project requires the following dependencies:
 
 ### Installation
 
-Build  from the source and intsall dependencies:
+Build  from the source and install dependencies:
 
 1. **Clone the repository:**
 
     ```sh
-    ❯ git clone ../
+    ❯ git clone https://github.com/GabrielFig/jewelry_shop.git
     ```
 
 2. **Navigate to the project directory:**
 
     ```sh
-    ❯ cd 
+    ❯ cd jewelry_shop
     ```
 
 3. **Install the dependencies:**
