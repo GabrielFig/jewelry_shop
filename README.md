@@ -1,12 +1,10 @@
-Aquí tienes un `README.md` profesional para tu proyecto, siguiendo las mejores prácticas y alineado con la arquitectura del libro *"Architecture Patterns with Python"*:
 
-```markdown
 # 🏷️ Jewelry Shop Allocation API
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?style=default&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3776AB.svg?style=default&logo=Python&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Pytest](https://img.shields.io/badge/Pytest-0A9EDC.svg?style=default&logo=Pytest&logoColor=white)](https://fastapi.tiangolo.com/)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00.svg?style=default&logo=SQLAlchemy&logoColor=white)]
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00.svg?style=default&logo=SQLAlchemy&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=default&logo=Docker&logoColor=white)](https://www.docker.com/)
 
