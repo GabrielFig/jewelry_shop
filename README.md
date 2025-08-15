@@ -3,9 +3,12 @@ Aquí tienes un `README.md` profesional para tu proyecto, siguiendo las mejores 
 ```markdown
 # 🏷️ Jewelry Shop Allocation API
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?style=default&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3776AB.svg?style=default&logo=Python&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Pytest](https://img.shields.io/badge/Pytest-0A9EDC.svg?style=default&logo=Pytest&logoColor=white)](https://fastapi.tiangolo.com/)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00.svg?style=default&logo=SQLAlchemy&logoColor=white)]
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=default&logo=Docker&logoColor=white)](https://www.docker.com/)
 
 Sistema de asignación de inventario para joyería, implementando:
 - **Domain-Driven Design** (DDD)
@@ -107,23 +110,3 @@ docker-compose restart db
 - [Libro: Architecture Patterns with Python](https://www.cosmicpython.com/)
 - [FastAPI Best Practices](https://fastapi.tiangolo.com/best-practices/)
 - [DDD para Pythonistas](https://github.com/cosmicpython/book)
-```
-
----
-
-### Características clave del README:
-1. **Badges visuales** para tecnologías usadas
-2. **Estructura clara** de directorios (alineada al libro)
-3. **Ejemplos ejecutables** de API requests
-4. **Diagrama Mermaid** integrado (se renderiza en GitHub/GitLab)
-5. **Solución de problemas** comunes
-6. **Enfoque en DDD** y patrones del libro
-
-Para mejor visualización:
-1. Guarda como `README.md` en la raíz del proyecto
-2. Asegúrate de tener habilitado Mermaid en tu repositorio (en GitHub funciona nativo)
-
-¿Necesitas que agregue alguna sección adicional? Por ejemplo:
-- 🧑‍💻 **Ejemplo completo de flujo**
-- 🔄 **Workflow de desarrollo**
-- 📦 **Despliegue en producción**
