@@ -92,6 +92,19 @@ class OrderItemModel(Base):
     order = relationship("OrderModel", back_populates="items")
 
 
+# ─── Users ───────────────────────────────────────────────────────────────────
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True)
+    email = Column(String(255), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False, default="customer")
+    is_active = Column(Boolean, default=True, nullable=False)
+
+
 # ─── Inventory ───────────────────────────────────────────────────────────────
 
 class BatchModel(Base):
