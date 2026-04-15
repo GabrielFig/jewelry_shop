@@ -113,7 +113,34 @@ def seed_data():
     print("Sample data seeded successfully.")
 
 
+def create_default_admin():
+    """Create a default admin account if none exists."""
+    import uuid, os
+    from app.auth.hashing import hash_password
+    from app.domain.models import User, UserRole
+    from app.unit_of_work import SqlAlchemyUnitOfWork
+
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@jewelry.com")
+    admin_password = os.getenv("ADMIN_PASSWORD", "admin1234")
+
+    with SqlAlchemyUnitOfWork() as uow:
+        if uow.users.get_by_email(admin_email):
+            print(f"Admin '{admin_email}' already exists, skipping.")
+            return
+        user = User(
+            id=str(uuid.uuid4()),
+            email=admin_email,
+            hashed_password=hash_password(admin_password),
+            name="Store Admin",
+            role=UserRole.ADMIN,
+        )
+        uow.users.add(user)
+        uow.commit()
+    print(f"Default admin created: {admin_email} / {admin_password}")
+
+
 if __name__ == "__main__":
     create_tables()
+    create_default_admin()
     if "--seed" in sys.argv:
         seed_data()
