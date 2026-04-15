@@ -4,6 +4,10 @@ version: "3.9"
 x-app-env: &app-env
   DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-ecommerce}
   LOG_LEVEL: ${LOG_LEVEL:-info}
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-in-production}
+  ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@jewelry.com}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin1234}
 
 services:
 
