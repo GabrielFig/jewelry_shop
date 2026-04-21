@@ -4,7 +4,7 @@ SQLAlchemy ORM models — infrastructure layer, not domain models.
 Domain objects are converted to/from these models inside the repository
 implementations.  The domain layer never imports from this module.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -73,7 +73,7 @@ class OrderModel(Base):
     id = Column(String(36), primary_key=True)
     customer_id = Column(String(36), ForeignKey("customers.id"), nullable=False)
     status = Column(String(20), nullable=False, default="pending")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     customer = relationship("CustomerModel", back_populates="orders")
     items = relationship("OrderItemModel", back_populates="order", cascade="all, delete-orphan")
