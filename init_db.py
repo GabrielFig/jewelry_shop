@@ -115,13 +115,18 @@ def seed_data():
 
 def create_default_admin():
     """Create a default admin account if none exists."""
-    import uuid, os
+    import os
+    import uuid
     from app.auth.hashing import hash_password
     from app.domain.models import User, UserRole
     from app.unit_of_work import SqlAlchemyUnitOfWork
 
-    admin_email = os.getenv("ADMIN_EMAIL", "admin@jewelry.com")
-    admin_password = os.getenv("ADMIN_PASSWORD", "admin1234")
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+
+    if not admin_email or not admin_password:
+        print("ADMIN_EMAIL and ADMIN_PASSWORD must be set — skipping default admin creation.")
+        return
 
     with SqlAlchemyUnitOfWork() as uow:
         if uow.users.get_by_email(admin_email):
@@ -136,7 +141,7 @@ def create_default_admin():
         )
         uow.users.add(user)
         uow.commit()
-    print(f"Default admin created: {admin_email} / {admin_password}")
+    print(f"Default admin created: {admin_email}")
 
 
 if __name__ == "__main__":
