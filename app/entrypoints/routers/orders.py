@@ -1,9 +1,11 @@
 from decimal import Decimal
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.auth.dependencies import get_current_user, require_admin
+from app.domain.models import User
 from app.service_layer import services
 from app.unit_of_work import SqlAlchemyUnitOfWork
 
@@ -73,7 +75,7 @@ def _to_out(order) -> OrderOut:
 # ─── Routes ──────────────────────────────────────────────────────────────────
 
 @router.post("", response_model=OrderOut, status_code=201)
-def create_order(body: OrderCreateIn):
+def create_order(body: OrderCreateIn, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.create_order(body.customer_id, uow)
@@ -83,7 +85,7 @@ def create_order(body: OrderCreateIn):
 
 
 @router.get("/{order_id}", response_model=OrderOut)
-def get_order(order_id: str):
+def get_order(order_id: str, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.get_order(order_id, uow)
@@ -93,14 +95,14 @@ def get_order(order_id: str):
 
 
 @router.get("/customer/{customer_id}", response_model=List[OrderOut])
-def list_customer_orders(customer_id: str):
+def list_customer_orders(customer_id: str, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         orders = services.list_customer_orders(customer_id, uow)
     return [_to_out(o) for o in orders]
 
 
 @router.post("/{order_id}/items", response_model=OrderOut)
-def add_item(order_id: str, body: AddItemIn):
+def add_item(order_id: str, body: AddItemIn, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.add_item_to_order(order_id, body.sku, body.quantity, uow)
@@ -110,7 +112,7 @@ def add_item(order_id: str, body: AddItemIn):
 
 
 @router.post("/{order_id}/confirm", response_model=OrderOut)
-def confirm_order(order_id: str):
+def confirm_order(order_id: str, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.confirm_order(order_id, uow)
@@ -120,7 +122,7 @@ def confirm_order(order_id: str):
 
 
 @router.post("/{order_id}/pay", response_model=OrderOut)
-def pay_order(order_id: str, body: PayOrderIn):
+def pay_order(order_id: str, body: PayOrderIn, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.pay_order(
@@ -135,7 +137,7 @@ def pay_order(order_id: str, body: PayOrderIn):
 
 
 @router.post("/{order_id}/ship", response_model=OrderOut)
-def ship_order(order_id: str):
+def ship_order(order_id: str, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.ship_order(order_id, uow)
@@ -145,7 +147,7 @@ def ship_order(order_id: str):
 
 
 @router.post("/{order_id}/cancel", response_model=OrderOut)
-def cancel_order(order_id: str):
+def cancel_order(order_id: str, _: User = Depends(get_current_user)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             order = services.cancel_order(order_id, uow)

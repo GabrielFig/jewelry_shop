@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import require_admin
+from app.domain.models import User
 from app.entrypoints.routers import auth, categories, customers, inventory, orders, products
 from app.notifications import SENT_NOTIFICATIONS
 
@@ -15,7 +17,7 @@ router.include_router(inventory.router)
 
 
 @router.get("/notifications", tags=["System"])
-def get_notifications():
+def get_notifications(_: User = Depends(require_admin)):
     """Returns all domain event notifications published in this session."""
     return {"count": len(SENT_NOTIFICATIONS), "notifications": SENT_NOTIFICATIONS}
 
