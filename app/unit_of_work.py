@@ -18,6 +18,12 @@ from __future__ import annotations
 
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load .env from the project root (works both locally and inside Docker)
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -28,22 +34,35 @@ from app.adapters.repository import (
     AbstractCustomerRepository,
     AbstractOrderRepository,
     AbstractProductRepository,
+    AbstractUserRepository,
     InMemoryBatchRepository,
     InMemoryCategoryRepository,
     InMemoryCustomerRepository,
     InMemoryOrderRepository,
     InMemoryProductRepository,
+    InMemoryUserRepository,
     SqlAlchemyBatchRepository,
     SqlAlchemyCategoryRepository,
     SqlAlchemyCustomerRepository,
     SqlAlchemyOrderRepository,
     SqlAlchemyProductRepository,
+    SqlAlchemyUserRepository,
 )
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:postgres@db:5432/ecommerce",
-)
+def _build_database_url() -> str:
+    # 1. Prefer an explicit DATABASE_URL if set
+    if url := os.getenv("DATABASE_URL"):
+        return url
+    # 2. Build from individual parts (useful when running locally with .env)
+    user = os.getenv("POSTGRES_USER", "postgres")
+    password = os.getenv("POSTGRES_PASSWORD", "postgres")
+    host = os.getenv("POSTGRES_HOST", "localhost")
+    port = os.getenv("DB_PORT", "5432")
+    db = os.getenv("POSTGRES_DB", "ecommerce")
+    return f"postgresql://{user}:{password}@{host}:{port}/{db}"
+
+
+DATABASE_URL = _build_database_url()
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
@@ -55,6 +74,7 @@ class AbstractUnitOfWork(ABC):
     customers: AbstractCustomerRepository
     orders: AbstractOrderRepository
     batches: AbstractBatchRepository
+    users: AbstractUserRepository
 
     def __enter__(self) -> "AbstractUnitOfWork":
         return self
@@ -85,6 +105,7 @@ class InMemoryUnitOfWork(AbstractUnitOfWork):
         self.customers = InMemoryCustomerRepository()
         self.orders = InMemoryOrderRepository()
         self.batches = InMemoryBatchRepository()
+        self.users = InMemoryUserRepository()
         self.committed = False
 
     def commit(self) -> None:
@@ -107,6 +128,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         self.customers = SqlAlchemyCustomerRepository(self._session)
         self.orders = SqlAlchemyOrderRepository(self._session)
         self.batches = SqlAlchemyBatchRepository(self._session)
+        self.users = SqlAlchemyUserRepository(self._session)
         self.committed = False
 
     def __enter__(self) -> "SqlAlchemyUnitOfWork":

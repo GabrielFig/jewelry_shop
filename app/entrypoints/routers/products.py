@@ -1,9 +1,11 @@
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
+from app.auth.dependencies import get_current_user, require_admin
+from app.domain.models import User
 from app.service_layer import services
 from app.unit_of_work import SqlAlchemyUnitOfWork
 
@@ -55,7 +57,7 @@ def _to_out(p) -> ProductOut:
 
 
 @router.post("", response_model=ProductOut, status_code=201)
-def create_product(body: ProductIn):
+def create_product(body: ProductIn, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             product = services.create_product(
@@ -95,7 +97,7 @@ def get_product(sku: str):
 
 
 @router.patch("/{sku}/price", response_model=ProductOut)
-def update_price(sku: str, body: PriceUpdateIn):
+def update_price(sku: str, body: PriceUpdateIn, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             product = services.update_product_price(sku, body.amount, body.currency, uow)
@@ -105,7 +107,7 @@ def update_price(sku: str, body: PriceUpdateIn):
 
 
 @router.delete("/{sku}", status_code=204)
-def deactivate_product(sku: str):
+def deactivate_product(sku: str, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             services.deactivate_product(sku, uow)

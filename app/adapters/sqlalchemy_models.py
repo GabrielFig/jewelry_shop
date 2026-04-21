@@ -4,7 +4,7 @@ SQLAlchemy ORM models — infrastructure layer, not domain models.
 Domain objects are converted to/from these models inside the repository
 implementations.  The domain layer never imports from this module.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -73,7 +73,7 @@ class OrderModel(Base):
     id = Column(String(36), primary_key=True)
     customer_id = Column(String(36), ForeignKey("customers.id"), nullable=False)
     status = Column(String(20), nullable=False, default="pending")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     customer = relationship("CustomerModel", back_populates="orders")
     items = relationship("OrderItemModel", back_populates="order", cascade="all, delete-orphan")
@@ -90,6 +90,19 @@ class OrderItemModel(Base):
     unit_price_currency = Column(String(3), nullable=False, default="USD")
 
     order = relationship("OrderModel", back_populates="items")
+
+
+# ─── Users ───────────────────────────────────────────────────────────────────
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True)
+    email = Column(String(255), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False, default="customer")
+    is_active = Column(Boolean, default=True, nullable=False)
 
 
 # ─── Inventory ───────────────────────────────────────────────────────────────

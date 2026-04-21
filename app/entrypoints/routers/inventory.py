@@ -1,9 +1,11 @@
 from datetime import date
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.auth.dependencies import require_admin
+from app.domain.models import User
 from app.service_layer import services
 from app.unit_of_work import SqlAlchemyUnitOfWork
 
@@ -32,7 +34,7 @@ class AllocateIn(BaseModel):
 
 
 @router.post("/batches", response_model=BatchOut, status_code=201)
-def add_batch(body: BatchIn):
+def add_batch(body: BatchIn, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             batch = services.add_batch(
@@ -54,7 +56,7 @@ def add_batch(body: BatchIn):
 
 
 @router.get("/batches", response_model=List[BatchOut])
-def list_batches():
+def list_batches(_: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         batches = uow.batches.list()
     return [
@@ -70,7 +72,7 @@ def list_batches():
 
 
 @router.post("/allocate")
-def allocate(body: AllocateIn):
+def allocate(body: AllocateIn, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             batch_ref = services.allocate_order(

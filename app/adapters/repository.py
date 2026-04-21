@@ -346,6 +346,74 @@ def _order_from_model(m: OrderModel) -> Order:
     return o
 
 
+# ─── User ────────────────────────────────────────────────────────────────────
+
+class AbstractUserRepository(ABC):
+    @abstractmethod
+    def add(self, user: "User") -> None: ...
+
+    @abstractmethod
+    def get(self, id: str) -> Optional["User"]: ...
+
+    @abstractmethod
+    def get_by_email(self, email: str) -> Optional["User"]: ...
+
+
+class InMemoryUserRepository(AbstractUserRepository):
+    def __init__(self):
+        self._store: list = []
+
+    def add(self, user) -> None:
+        self._store.append(user)
+
+    def get(self, id: str):
+        return next((u for u in self._store if u.id == id), None)
+
+    def get_by_email(self, email: str):
+        return next((u for u in self._store if u.email == email), None)
+
+
+class SqlAlchemyUserRepository(AbstractUserRepository):
+    def __init__(self, session: Session):
+        self._session = session
+
+    def add(self, user) -> None:
+        from app.adapters.sqlalchemy_models import UserModel
+        model = UserModel(
+            id=user.id,
+            email=user.email,
+            hashed_password=user.hashed_password,
+            name=user.name,
+            role=user.role.value,
+            is_active=user.is_active,
+        )
+        self._session.add(model)
+
+    def get(self, id: str):
+        from app.adapters.sqlalchemy_models import UserModel
+        from app.domain.models import User, UserRole
+        m = self._session.query(UserModel).filter_by(id=id).first()
+        return _user_from_model(m) if m else None
+
+    def get_by_email(self, email: str):
+        from app.adapters.sqlalchemy_models import UserModel
+        m = self._session.query(UserModel).filter_by(email=email).first()
+        return _user_from_model(m) if m else None
+
+
+def _user_from_model(m) -> "User":
+    from app.domain.models import User, UserRole
+    u = User.__new__(User)
+    u.id = str(m.id)
+    u.email = str(m.email)
+    u.hashed_password = str(m.hashed_password)
+    u.name = str(m.name)
+    u.role = UserRole(m.role)
+    u.is_active = bool(m.is_active)
+    u.events = []
+    return u
+
+
 # ─── Batch (Inventory) ───────────────────────────────────────────────────────
 
 class AbstractBatchRepository(ABC):

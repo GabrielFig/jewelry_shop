@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.auth.dependencies import require_admin
+from app.domain.models import User
 from app.service_layer import services
 from app.unit_of_work import SqlAlchemyUnitOfWork
 
@@ -19,7 +21,7 @@ class CategoryOut(BaseModel):
 
 
 @router.post("", response_model=CategoryOut, status_code=201)
-def create_category(body: CategoryIn):
+def create_category(body: CategoryIn, _: User = Depends(require_admin)):
     with SqlAlchemyUnitOfWork() as uow:
         try:
             cat = services.create_category(body.name, body.description, uow)

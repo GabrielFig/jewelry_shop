@@ -299,6 +299,44 @@ class Order:
         self.events.append(OrderCancelled(order_id=self.id))
 
 
+# ─── Users ───────────────────────────────────────────────────────────────────
+
+class UserRole(str, Enum):
+    ADMIN = "admin"        # store manager — can manage products, orders, inventory
+    CUSTOMER = "customer"  # end buyer — can browse, order, view own account
+
+
+class User:
+    """
+    Represents both tenant admins (store managers) and end customers.
+    Role-based access is enforced at the API layer.
+    """
+
+    def __init__(
+        self,
+        id: str,
+        email: str,
+        hashed_password: str,
+        name: str,
+        role: UserRole = UserRole.CUSTOMER,
+    ):
+        self.id = id
+        self.email = email
+        self.hashed_password = hashed_password
+        self.name = name
+        self.role = role
+        self.is_active = True
+        self.events: list = []
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, User):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+
 # ─── Payment Strategy (abstract) ─────────────────────────────────────────────
 
 class AbstractPaymentStrategy(ABC):
