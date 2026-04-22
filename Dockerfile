@@ -33,4 +33,4 @@ EXPOSE 8000
 
 # Initialize the DB, then start the server.
 # The entrypoint script handles waiting for Postgres to be ready.
-CMD ["sh", "-c", "python init_db.py && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "python init_db.py --seed && uvicorn main:app --host 0.0.0.0 --port 8000"]
